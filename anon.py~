@@ -1,0 +1,48 @@
+import math
+from random import uniform as U
+import sys
+
+#Average lifespan is 76 years. In practice, most studies are actually looking for a much smaller age group.
+
+#obviously the actual values in that people will have for these will not be a normal distribution, which will mean that some of the less likely zip codes, etc will be far less anonymous, but for now we will treat them as such and focus on the information theory part of this. In the future it would be cool to hook this up with a census (or similar) database to get a real distribution
+
+params = {
+    #'day' : 365,
+    'year': 76, #76
+    'zip' : 43191, #43191 zip codes in the US
+    'sex' : 2
+}
+
+#there are 31 zip codes in boston alone
+
+param_space_size = reduce(lambda accum, x: accum * x, \
+    [ param_permutations for key, param_permutations in params.iteritems()])
+
+print "Parameter Space Permutations: " + str(param_space_size)
+
+N = int(sys.argv[1])
+print "Sample Size: " + str(N)
+
+#generate random values from uniform distribution for each parameter
+x = {}
+for i in xrange(0, N):
+    key = ''
+    for k, v in params.iteritems():
+        part = int(math.ceil(U(0, v)))
+        key += ':%s:' % str(part) 
+
+    if key in x.keys():
+        x[key] += 1
+    else:
+        x[key] = 1
+
+#create a histogram that of how many unique, or N-sized groups of parameters exist
+histogram = {}
+for k, v in x.iteritems():
+    if v in histogram.keys():
+        histogram[v] += 1
+    else:
+        histogram[v] = 1
+
+from pprint import pprint
+pprint(histogram)
